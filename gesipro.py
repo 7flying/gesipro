@@ -2,8 +2,8 @@
 
 from sys import argv
 
-VOCALES= ['a', 'e', 'i', 'o', 'u']
-CONSO_CONCAT_SPECIAL= {	 'b': ['l'],
+VOCALES = ['a', 'e', 'i', 'o', 'u', 'y']
+CONSO_CONCAT_SPECIAL = { 'b': ['l'],
 						 'c': ['l', 'h'],
 						 'f': ['l', 'r'],
 						 'g': ['l', 'r'],
@@ -13,7 +13,7 @@ CONSO_CONCAT_SPECIAL= {	 'b': ['l'],
 						 'r': ['r'],
 						 't': ['r']
 					}
-CONSO_CONCAT= [	'b', 'bl',
+CONSO_CONCAT = ['b', 'bl',
 				'c', 'cl', 'ch',
 				'd',
 				'f', 'fl', 'fr',
@@ -37,11 +37,12 @@ CONSO_CONCAT= [	'b', 'bl',
 				'z'
 				]
 
+
 def get_vowels(word):
 	"""
-	Obtiene las vocales de 'word'.
+	Obtains the vowels of the word.
 	"""
-	vowels= []
+	vowels = []
 	if word[0] not in VOCALES:
 		for letra in word:
 			if letra in VOCALES and (letra not in vowels):
@@ -50,7 +51,7 @@ def get_vowels(word):
 
 def get_first_char(list_words):
 	"""
-	Obtiene el primer carácter de cada palabra en 'list_words'
+	Returns the first character of every word in 'list' words
 	"""
 	first_chars= []
 	for word in list_words:
@@ -62,12 +63,14 @@ def get_first_char(list_words):
 					first_chars.append(word[0])
 			else:
 				first_chars.append(word[0])
+		else:
+			first_chars.append(word[0])
 	return first_chars
 
 def vowel_conso_combinations(first_char, list_vowels):
 	"""
-	Retorna una lista de combinaciones de 'first_char' con las vocales de
-	'list_vowels' que sean "legales" en castellano.
+	Returns a list of combinations using 'first_char' with the vowels in
+	the 'list_vowels' that are legal in Spanish.
 	"""
 	combinations= []
 	for vowel in list_vowels:
@@ -78,46 +81,44 @@ def vowel_conso_combinations(first_char, list_vowels):
 
 def generate_combinations(dic_syllable):
 	"""
-	Genera las combinaciones de siglas.
+	Generate syllable combinations.
 	"""
 	root_list= dic_syllable[0]
 	for i in range(1, len(dic_syllable.keys())):
 		previus= len(root_list)
 		# Necesitamos tener n copias de lo que hemos generado ya
 		# donde n es el número de sílabas del nivel actual
-		root_list= root_list * len(dic_syllable[i])
+		root_list = root_list * len(dic_syllable[i])
 		for j in range(len(dic_syllable[i])):
 			for k in range(previus):
-				root_list[previus * j + k]= root_list[previus * j + k] + dic_syllable[i][j] 
+				root_list[previus * j + k] = root_list[previus * j + k] + dic_syllable[i][j] 
 
 	return root_list
 
 def main(lis):
-	"""
-	Entrada principal del programa
-	"""
 	if len(lis) > 1:
-
-		print "\n $ Generating combinations ...\n"
-		dic_combinations= {}
-		first_chars= get_first_char(lis)
+		print "$ Generating combinations ...\n"
+		dic_combinations = {}
+		first_chars = get_first_char(lis)
 		composite_name= ""
-		i= 0
+		i = 0
 		# Obtenemos combinaciones de vocales
 		for pos in range(len(first_chars)):
-			vowels= get_vowels(lis[pos])
-			if len(vowels) > 0:
-				dic_combinations[i]= vowel_conso_combinations(first_chars[i], vowels)
+			if first_chars[i] in VOCALES:
+				dic_combinations[i] = [first_chars[i]]
 				i += 1
+			else:	
+				vowels = get_vowels(lis[pos])
+				if len(vowels) > 0:
+					dic_combinations[i] = vowel_conso_combinations(first_chars[i], vowels)
+					i += 1
 	
-		resultados= generate_combinations(dic_combinations)
-		print " $ Generated %d combinations: " % len(resultados)
+		resultados = generate_combinations(dic_combinations)
+		print "$ Generated %d combinations: " % len(resultados)
 		for pos in range(len(resultados)):
-			print "   - %s" % resultados[pos]
-			
-
+			print "   - %s" % resultados[pos]	
 	else:
-		print "\n $ Not enough words, type at least 2."
+		print "$ Not enough words, type at least 2."
 
 if __name__ == '__main__':
 	main(list(argv)[1:])
